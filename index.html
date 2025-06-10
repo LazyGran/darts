@@ -59,7 +59,7 @@
 
       if(!raw.trim())
       {
-        error.text = "Please enter at least one player name"
+        error.textCotent = "Please enter at least one player name"
         return;
       }
 
@@ -67,7 +67,7 @@
 
       if(players.length < 1)
       {
-        error.text = "Please enter at least one player name"
+        error.textContent = "Please enter at least one player name"
         return;
       }
 
@@ -82,15 +82,18 @@
       if(ongoing === true)  return;
       else                  ongoing = true;
 
-      const table     = document.getElementById("scores")
-      const p         = document.createElement("th")
-      const s         = document.createElement("td")
-      const headerRow = table.rows[0]
-      const scoreRow  = table.rows[1]
+      const table       = document.getElementById("scores")
+      const turn        = document.getElementById("turn");
+      const scoreInput  = document.getElementById("scoreInput");
+      const scoreButton = document.getElementById("submit");
+
+      const headerRow = table.insertRow()
+      const scoreRow  = table.insertRow()
       const scores    = players.map(() => 301)
 
+      let round   = 0
       let current = 0
-
+      let curRow  = table.insertRow()
 
       const longest   = players.reduce((a, b) => a.length > b.length ? a : b)
       const canvas    = document.createElement("canvas")
@@ -101,27 +104,79 @@
       const width     = context.measureText(longest).width + 20
 
       table.border  = "1"
-      p.textContent = "Player"
-      s.textContent = "Score"
-
-      headerRow.appendChild(p)
-      scoreRow.appendChild(s)
 
       document.getElementById("entry").style.display    = "block";
       document.getElementById("starter").style.display  = "none";
 
-      players.forEach(player =>
+      players.forEach((player, i) =>
       {
         const th = document.createElement("th")
         const td = document.createElement("td")
 
         th.textContent = player
         th.style.width = `${Math.floor(width)}px`
-        td.textContent = "301"
+        td.textContent = scores[i]
 
         headerRow.appendChild(th)
         scoreRow.appendChild(td)
       })
+
+      updateTurn()
+
+      scoreButton.addEventListener("click", () =>
+      {
+        const value = parseInt(scoreInput.value)
+        if(isNaN(value) || value < 0) return;
+
+        const currentScore  = scores[current]
+        const newScore      = currentScore - value;
+
+        if(newScore < 0)
+        {
+          alert(`${players[current]} busted!`)
+        }
+        else if(newScore === 0)
+        {
+          alert(`${players[current]} wins!`)
+
+          scores[current] = 0;
+
+          updateTable()
+
+          scoreButton.disabled = true;
+        }
+        else
+        {
+          scores[current]   = newScore
+          scoreInput.value  = ""
+
+          updateTurn()
+          updateTable(newScore, current)
+
+          current           = (current + 1) % players.length
+        }
+      })
+
+
+      function updateTurn()
+      {
+        turn.textContent = `${players[current]}'s turn`
+      }
+
+      function updateTable(newScore) 
+      {
+        if(current === 0)
+        {
+          curRow  = table.insertRow()
+          round   = round + 1
+        }
+
+        const td = document.createElement("td")
+
+        td.textContent = newScore
+
+        curRow.appendChild(td)
+      }
     }
   </script>
 
@@ -130,7 +185,7 @@
   <div id="entry" style="display: none;">
     <h2 id="turn"></h2>
     <input type="number" id="scoreInput" placeholder="Enter score" />
-    <button id="submitScore">Submit</button> 
+    <button id="submit">Submit</button> 
   </div>
 
   <br>
