@@ -36,6 +36,7 @@
     <button id="start">Start Game</button>
     <p class="error" id="error"></p>
   </div>
+
   <script>
     const input = document.getElementById('input');
     const error = document.getElementById('error');
@@ -133,7 +134,15 @@
 
       scoreButton.addEventListener("click", () =>
       {
-        const value = parseInt(scoreInput.value)
+        const raw     = scoreInput.value
+        const numbers = raw.split(",").map(str => Number(str.trim()));
+
+        let value = 0
+        numbers.forEach(number =>
+        {
+          value = value + number
+        })
+
         if(isNaN(value) || value < 0) return;
 
         const currentScore  = scores[current]
@@ -155,8 +164,9 @@
         {
           alert(`${players[current]} wins!`)
 
-          scores[current] = 0;
-
+          scores[current]   = 0;
+          scoreInput.value  = ""
+          
           updateTable()
 
           scoreButton.disabled = true;
@@ -200,8 +210,8 @@
 
   <div id="entry" style="display: none;">
     <h2 id="turn"></h2>
-    <input type="number" id="scoreInput" placeholder="Enter score" />
-    <button id="submit">Submit</button> 
+    <input type="text" id="scoreInput" placeholder="Enter score" />
+    <button id="submit">Submit</button>
   </div>
 
   <br>
