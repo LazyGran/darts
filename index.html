@@ -81,14 +81,19 @@
       if(ongoing === true) return;
 
       const table     = document.getElementById("scores")
-      const headerRow = table.rows[0]
-      const scoreRow  = table.rows[1]
       const p         = document.createElement("th")
       const s         = document.createElement("td")
+      const headerRow = table.rows[0]
+      const scoreRow  = table.rows[1]
 
-      table.border = "1"
 
+      const longest   = players.reduce((a, b) => a.length > b.length ? a : b)
+      const canvas    = document.createElement("canvas")
+      const context   = canvas.getContext("2d")
+      context.font    = "16px Arial"
+      const width     = context.measureText(longest).width + 20
 
+      table.border  = "1"
       p.textContent = "Player"
       s.textContent = "Score"
 
@@ -101,6 +106,7 @@
         const td = document.createElement("td")
 
         th.textContent = player
+        th.style.width = `${Math.floor(width)}px`
         td.textContent = "301"
 
         headerRow.appendChild(th)
