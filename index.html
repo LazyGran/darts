@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Darts - Player Setup</title>
+  <style>
+    body 
+    {
+      max-width: 400px;
+      margin: 50px auto;
+      text-align: center;
+      background-color: #242424; 
+      color: #eee;
+      font-family: Arial, sans-serif;
+    }
+    input, button 
+    {
+      font-size: 1.2em;
+      padding: 10px;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 10px 0;
+    }
+    .error 
+    {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Enter Player Names</h1>
+  <p>Separate names with commas (e.g., Black, Gran, Jack)</p>
+  <input type="text" id="input" placeholder="Enter player names..." />
+  <button id="start">Start Game</button>
+  <p class="error" id="error"></p>
+
+  <script>
+    const input = document.getElementById('input');
+    const error = document.getElementById('error');
+    const start = document.getElementById('start');
+
+    var ongoing = false
+
+    input.addEventListener("keydown", function(event)
+    {
+      if(event.key === "Enter")
+      {
+        start.click()
+      }
+    })
+
+    start.addEventListener("click", () => 
+    {
+      error.textContent   = ""
+
+      const raw = input.value
+
+      if(!raw.trim())
+      {
+        error.text = "Please enter at least one player name"
+        return;
+      }
+
+      const players = raw.split(",").map(name => name.trim()).filter(Boolean)
+
+      if(players.length < 1)
+      {
+        error.text = "Please enter at least one player name"
+        return;
+      }
+
+      //alert(`Players: ${players.join(", ")}`)
+      createTable(players)
+
+      input.value         = ""
+    })
+
+    async function createTable(players)
+    {
+      if(ongoing === true) return;
+
+      const table     = document.getElementById("scores")
+      const headerRow = table.rows[0]
+      const scoreRow  = table.rows[1]
+      const p         = document.createElement("th")
+      const s         = document.createElement("td")
+
+      table.border = "1"
+
+
+      p.textContent = "Player"
+      s.textContent = "Score"
+
+      headerRow.appendChild(p)
+      scoreRow.appendChild(s)
+
+      players.forEach(player =>
+      {
+        const th = document.createElement("th")
+        const td = document.createElement("td")
+
+        th.textContent = player
+        td.textContent = "301"
+
+        headerRow.appendChild(th)
+        scoreRow.appendChild(td)
+      })
+
+      ongoing = true
+    }
+  </script>
+
+  <br><br><br>
+
+  <table id="scores" border="0">
+    <tr>
+    </tr>
+    <tr>
+    </tr>
+  </table>
+</body>
+</html>
