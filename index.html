@@ -29,12 +29,13 @@
   </style>
 </head>
 <body>
-  <h1>Enter Player Names</h1>
-  <p>Separate names with commas (e.g., Black, Gran, Jack)</p>
-  <input type="text" id="input" placeholder="Enter player names..." />
-  <button id="start">Start Game</button>
-  <p class="error" id="error"></p>
-
+  <div id="starter" style="display: block;">
+    <h1>Enter Player Names</h1>
+    <p>Separate names with commas (e.g., Black, Gran, Jack)</p>
+    <input type="text" id="input" placeholder="Enter player names..." />
+    <button id="start">Start Game</button>
+    <p class="error" id="error"></p>
+  </div>
   <script>
     const input = document.getElementById('input');
     const error = document.getElementById('error');
@@ -71,26 +72,32 @@
       }
 
       //alert(`Players: ${players.join(", ")}`)
-      createTable(players)
+      game(players)
 
       input.value         = ""
     })
 
-    async function createTable(players)
+    async function game(players)
     {
-      if(ongoing === true) return;
+      if(ongoing === true)  return;
+      else                  ongoing = true;
 
       const table     = document.getElementById("scores")
       const p         = document.createElement("th")
       const s         = document.createElement("td")
       const headerRow = table.rows[0]
       const scoreRow  = table.rows[1]
+      const scores    = players.map(() => 301)
+
+      let current = 0
 
 
       const longest   = players.reduce((a, b) => a.length > b.length ? a : b)
       const canvas    = document.createElement("canvas")
       const context   = canvas.getContext("2d")
+
       context.font    = "16px Arial"
+
       const width     = context.measureText(longest).width + 20
 
       table.border  = "1"
@@ -99,6 +106,9 @@
 
       headerRow.appendChild(p)
       scoreRow.appendChild(s)
+
+      document.getElementById("entry").style.display    = "block";
+      document.getElementById("starter").style.display  = "none";
 
       players.forEach(player =>
       {
@@ -112,14 +122,20 @@
         headerRow.appendChild(th)
         scoreRow.appendChild(td)
       })
-
-      ongoing = true
     }
   </script>
 
-  <br><br><br>
+  <br><br>
 
-  <table id="scores" border="0">
+  <div id="entry" style="display: none;">
+    <h2 id="turn"></h2>
+    <input type="number" id="scoreInput" placeholder="Enter score" />
+    <button id="submitScore">Submit</button> 
+  </div>
+
+  <br>
+
+  <table id="scores" border="0", style="margin: 0 auto">
     <tr>
     </tr>
     <tr>
