@@ -176,10 +176,11 @@
           scores[current]   = newScore
           scoreInput.value  = ""
 
-          updateTurn()
           updateTable(newScore, current)
 
           current           = (current + 1) % players.length
+
+          updateTurn()
         }
       })
 
