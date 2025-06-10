@@ -134,6 +134,14 @@
         if(newScore < 0)
         {
           alert(`${players[current]} busted!`)
+
+          scoreInput.value  = ""
+
+          updateTurn()
+          updateTable(currentScore, current)
+
+          current           = (current + 1) % players.length
+
         }
         else if(newScore === 0)
         {
