@@ -42,8 +42,6 @@
     const error = document.getElementById('error');
     const start = document.getElementById('start');
 
-    var ongoing = false
-
     input.addEventListener("keydown", function(event)
     {
       if(event.key === "Enter")
@@ -80,8 +78,10 @@
 
     async function game(players)
     {
-      if(ongoing === true)  return;
-      else                  ongoing = true;
+      window.addEventListener('beforeunload', (event) => 
+      {
+        event.preventDefault();
+      });
 
       const table       = document.getElementById("scores")
       const turn        = document.getElementById("turn");
@@ -166,7 +166,7 @@
 
           scores[current]   = 0;
           scoreInput.value  = ""
-          
+
           updateTable()
 
           scoreButton.disabled = true;
