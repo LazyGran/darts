@@ -14,16 +14,6 @@
       color: #eee;
       font-family: Arial, sans-serif;
     }
-    button 
-    {
-      font-size: 1.2em;
-      padding: 10px;
-      width: 20%;
-      margin: 10px 0;
-      border-radius: 13px;     
-      cursor: pointer;
-      text-align: center;
-    }
     input
     {
       font-size: 1.2em;
@@ -31,6 +21,10 @@
       width: auto;
       margin: 10px 0;
       border-radius: 13px;    
+    }
+    td, th 
+    {
+      padding: 5px 10px; 
     }
     .error 
     {
@@ -43,7 +37,6 @@
     <h1>Enter Player Names</h1>
     <p>Separate names with commas (e.g., Black, Gran, Jack)</p>
     <input type="text" id="input" placeholder="Enter player names..." />
-    <button id="start">Start</button>
     <p class="error" id="error"></p>
   </div>
 
@@ -51,12 +44,11 @@
     <h1 id="turn"></h2>
     <p>Enter score (e. g., 20, 18, 7)</p>
     <input type="text" id="scoreInput" placeholder="Enter score" inputmode="numeric" pattern="[0-9]*" />
-    <button id="submit">Submit</button>
   </div>
 
   <br>
 
-  <table id="scores" border="0", style="margin: 0 auto">
+  <table id="scores" border="0", style="margin: 0 auto; font-size: 2em;">
     <tr>
     </tr>
     <tr>
@@ -71,34 +63,28 @@
     {
       if(event.key === "Enter")
       {
-        start.click()
+        error.textContent   = ""
+
+        const raw = input.value
+
+        if(!raw.trim())
+        {
+          error.textCotent = "Please enter at least one player name"
+          return;
+        }
+
+        const players = raw.split(",").map(name => name.trim()).filter(Boolean)
+
+        if(players.length < 1)
+        {
+          error.textContent = "Please enter at least one player name"
+          return;
+        }
+
+        game(players)
+
+        input.value = ""
       }
-    })
-
-    start.addEventListener("click", () => 
-    {
-      error.textContent   = ""
-
-      const raw = input.value
-
-      if(!raw.trim())
-      {
-        error.textCotent = "Please enter at least one player name"
-        return;
-      }
-
-      const players = raw.split(",").map(name => name.trim()).filter(Boolean)
-
-      if(players.length < 1)
-      {
-        error.textContent = "Please enter at least one player name"
-        return;
-      }
-
-      //alert(`Players: ${players.join(", ")}`)
-      game(players)
-
-      input.value         = ""
     })
 
     async function game(players)
@@ -127,7 +113,7 @@
 
       context.font    = "16px Arial"
 
-      const width     = context.measureText(longest).width + 20
+      const width     = context.measureText(longest).width
 
       table.border  = "1"
 
@@ -153,66 +139,61 @@
       {
         if(event.key === "Enter")
         {
-          scoreButton .click()
+          const raw     = scoreInput.value
+          const numbers = raw.split(",").map(str => Number(str.trim()));
+
+          let value = 0
+          numbers.forEach(number =>
+          {
+            value = value + number
+          })
+
+          if(isNaN(value) || value < 0) return;
+
+          const currentScore  = scores[current]
+          const newScore      = currentScore - value;
+
+          if(newScore < 0)
+          {
+            alert(`${players[current]} busted!`)
+
+            scoreInput.value  = ""
+
+            updateTurn()
+            updateTable(currentScore, current)
+
+            current           = (current + 1) % players.length
+
+          }
+          else if(newScore === 0)
+          {
+            alert(`${players[current]} wins!`)
+
+            scores[current]   = 0;
+            scoreInput.value  = ""
+
+            updateTable()
+          }
+          else
+          {
+            scores[current]   = newScore
+            scoreInput.value  = ""
+
+            updateTable(newScore, current)
+
+            current           = (current + 1) % players.length
+
+            updateTurn()
+          }
         }
       })
 
-      scoreButton.addEventListener("click", () =>
-      {
-        const raw     = scoreInput.value
-        const numbers = raw.split(",").map(str => Number(str.trim()));
 
-        let value = 0
-        numbers.forEach(number =>
-        {
-          value = value + number
-        })
-
-        if(isNaN(value) || value < 0) return;
-
-        const currentScore  = scores[current]
-        const newScore      = currentScore - value;
-
-        if(newScore < 0)
-        {
-          alert(`${players[current]} busted!`)
-
-          scoreInput.value  = ""
-
-          updateTurn()
-          updateTable(currentScore, current)
-
-          current           = (current + 1) % players.length
-
-        }
-        else if(newScore === 0)
-        {
-          alert(`${players[current]} wins!`)
-
-          scores[current]   = 0;
-          scoreInput.value  = ""
-
-          updateTable()
-
-          scoreButton.disabled = true;
-        }
-        else
-        {
-          scores[current]   = newScore
-          scoreInput.value  = ""
-
-          updateTable(newScore, current)
-
-          current           = (current + 1) % players.length
-
-          updateTurn()
-        }
-      })
 
 
       function updateTurn()
       {
-        turn.textContent = `${players[current]}'s turn`
+        turn.innerHTML = `${players[current]}'s turn <br><span style="color: green; font-weight: bold;">(${scores[current]})</span>`;
       }
 
       function updateTable(newScore) 
