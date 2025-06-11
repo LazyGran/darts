@@ -22,6 +22,16 @@
       margin: 10px 0;
       border-radius: 13px;    
     }
+    button 
+    {
+      font-size: 1.2em;
+      padding: 10px;
+      width: 30%;
+      margin: 10px 0;
+      border-radius: 13px;     
+      cursor: pointer;
+      text-align: center;
+    }
     td, th 
     {
       padding: 5px 10px; 
@@ -46,6 +56,11 @@
     <input type="text" id="scoreInput" placeholder="Enter score" inputmode="numeric" pattern="[0-9]*" />
   </div>
 
+  <div id="restart" style="display: none;">
+    <h1 id="winner"></h2>
+    <button id="newgame">New game</button>
+  </div>
+
   <br>
 
   <table id="scores" border="0", style="margin: 0 auto; font-size: 2em;">
@@ -57,7 +72,6 @@
   <script>
     const input = document.getElementById('input');
     const error = document.getElementById('error');
-    const start = document.getElementById('start');
 
     input.addEventListener("keydown", function(event)
     {
@@ -94,18 +108,24 @@
         event.preventDefault();
       });
 
+      document.getElementById("starter").style.display  = "none"
+      document.getElementById("restart").style.display  = "none"
+      document.getElementById("entry").style.display    = "block"
+
+
       const table       = document.getElementById("scores")
       const turn        = document.getElementById("turn");
       const scoreInput  = document.getElementById("scoreInput");
       const scoreButton = document.getElementById("submit");
+      const winner      = document.getElementById("winner");
 
       const headerRow = table.insertRow()
       const scoreRow  = table.insertRow()
-      const scores    = players.map(() => 301)
 
       let round   = 0
       let current = 0
       let curRow  = table.insertRow()
+      let scores  = players.map(() => 301)
 
       const longest   = players.reduce((a, b) => a.length > b.length ? a : b)
       const canvas    = document.createElement("canvas")
@@ -116,9 +136,6 @@
       const width     = context.measureText(longest).width
 
       table.border  = "1"
-
-      document.getElementById("entry").style.display    = "block";
-      document.getElementById("starter").style.display  = "none";
 
       players.forEach((player, i) =>
       {
@@ -169,10 +186,20 @@
           {
             alert(`${players[current]} wins!`)
 
-            scores[current]   = 0;
-            scoreInput.value  = ""
+            document.getElementById("entry").style.display    = "none";
+            document.getElementById("restart").style.display  = "block";
 
-            updateTable()
+            winner.innerHTML  = `<span style="color: green; font-weight: bold; font-size: 1.5em;">${players[current]} wins!</span>`
+
+
+            const restart = document.getElementById("newgame")
+
+            restart.addEventListener("click", () => 
+            {
+              location.reload();
+            })
+
+
           }
           else
           {
@@ -190,10 +217,9 @@
 
 
 
-
       function updateTurn()
       {
-        turn.innerHTML = `${players[current]}'s turn <br><span style="color: green; font-weight: bold;">(${scores[current]})</span>`;
+        turn.innerHTML = `${players[current]}'s turn <br><span style="color: green; font-weight: bold; font-size: 2.5em;">(${scores[current]})</span>`;
       }
 
       function updateTable(newScore) 
